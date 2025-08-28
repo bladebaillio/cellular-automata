@@ -2,8 +2,10 @@ const numRows = 30;
 const numCols = 50;
 let running = false;
 let interval;
+let speed = 200; // default
 
 const gridElement = document.getElementById("grid");
+const speedInput = document.getElementById("speed");
 
 // Initialize grid
 let grid = Array.from({ length: numRows }, () =>
@@ -53,7 +55,7 @@ document.getElementById("start").addEventListener("click", () => {
   running = !running;
   document.getElementById("start").innerText = running ? "Stop" : "Start";
   if (running) {
-    interval = setInterval(nextGeneration, 200);
+    interval = setInterval(nextGeneration, speed);
   } else {
     clearInterval(interval);
   }
@@ -71,6 +73,15 @@ document.getElementById("random").addEventListener("click", () => {
     Array.from({ length: numCols }, () => (Math.random() > 0.7 ? 1 : 0))
   );
   drawGrid();
+});
+
+// Update speed when input changes
+speedInput.addEventListener("change", () => {
+  speed = parseInt(speedInput.value, 10) || 200;
+  if (running) {
+    clearInterval(interval);
+    interval = setInterval(nextGeneration, speed);
+  }
 });
 
 // Initial draw
