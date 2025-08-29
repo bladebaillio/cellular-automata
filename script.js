@@ -3,6 +3,8 @@ const numCols = 50;
 let running = false;
 let interval;
 let speed = 200; // default
+let isDrawing = false;
+let eraseMode = false;
 
 const gridElement = document.getElementById("grid");
 const speedInput = document.getElementById("speed");
@@ -19,10 +21,26 @@ function drawGrid() {
       const cell = document.createElement("div");
       cell.classList.add("cell");
       if (grid[i][j]) cell.classList.add("alive");
-      cell.addEventListener("click", () => {
-        grid[i][j] = grid[i][j] ? 0 : 1;
+
+      // Mouse events
+      cell.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        eraseMode = e.shiftKey; // hold shift to erase
+        grid[i][j] = eraseMode ? 0 : 1;
         drawGrid();
       });
+
+      cell.addEventListener("mouseover", () => {
+        if (isDrawing) {
+          grid[i][j] = eraseMode ? 0 : 1;
+          drawGrid();
+        }
+      });
+
+      cell.addEventListener("mouseup", () => {
+        isDrawing = false;
+      });
+
       gridElement.appendChild(cell);
     }
   }
@@ -82,6 +100,11 @@ speedInput.addEventListener("change", () => {
     clearInterval(interval);
     interval = setInterval(nextGeneration, speed);
   }
+});
+
+// Stop drawing when mouse is released outside the grid
+document.body.addEventListener("mouseup", () => {
+  isDrawing = false;
 });
 
 // Initial draw
